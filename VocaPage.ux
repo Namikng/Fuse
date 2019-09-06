@@ -1,0 +1,70 @@
+<Page ux:Class="VocaPage">
+
+	<Router ux:Dependency="router"/>
+	<Navigator ux:Dependency="rootNav"/>
+
+	<!-- 임시 데이터 연결 -->
+	<!-- <JavaScript File="../../Server/TempData.js" /> -->
+	<JavaScript File="VocaPage.js"/>
+
+	<!-- <WhileActive>
+		<Callback Handler="{onResume}" />
+	</WhileActive>
+
+	<WhileInactive>
+		<Callback Handler="{onPause}" />
+	</WhileInactive> -->
+
+	<Activated When="Stable">
+		<Callback Handler="{onResume}"/>
+	</Activated>
+
+	<Deactivated>
+		<Callback Handler="{onPause}"/>
+	</Deactivated>
+
+	<!-- 단어장 클래스화-->
+  <Panel ux:Class="vocaBook">
+  	<string ux:Property="bookName" />
+  	<string ux:Property="WordCount" />
+
+  	<EnteringAnimation>
+    	<Scale Factor="0.5" Duration="0.4"/>
+  	</EnteringAnimation>
+
+  	<ExitingAnimation>
+  		<Scale Factor="0.5" Duration="0.4"/>
+  	</ExitingAnimation>
+
+		<Image File="../../../Assets/img_note_active.png" Width="60%" Alignment="Center" Margin="50,0,50,20">
+			<Grid Rows="3*,3*,3*" Height="100%" Margin="0,40,0,0">
+				<Text Value="{Read Property bookName}" Color="Black" Alignment="Center" Margin="0,10,0,0"/>
+				<Text Value="{Read Property WordCount}" Color="#00EBED" Alignment="Center" FontSize="25"/>
+				<Text Value="외워야 할 단어" Color="Gray" Alignment="Center" FontSize="11"/>
+			</Grid>
+		</Image>
+	</Panel>
+
+	<DockPanel ux:Name="root">
+		<!-- 상단 탭 -->
+		<Grid ColumnCount="2" Dock="Top">
+			<Rectangle Height="50" Color="#00EBED">
+				<Stroke Width="1" Color="#00EBED" />
+				<Text Alignment="Center" Color="White" FontSize="13">내 단어장</Text>
+			</Rectangle>
+
+			<Rectangle ux:Name="RoughlyMemorize_rect" Height="50" Color="#00EBED" Opacity="0.17">
+				<Stroke Color="#4CFFEB" Alignment="Center" Width="2" />
+			</Rectangle>
+		</Grid>
+
+		<!-- 단어장들 페이지 컨트롤 시작 -->
+		<PageControl ClipToBounds="true" Dock="Top" Margin="0, 80, 0, 0">
+			<!-- 단어장 클래스 사용 -->
+			<vocaBook bookName="오답 단어장" WordCount="{WANote}" Clicked="{goToWrongVocaListPage}"/>
+			<vocaBook bookName="복습 단어장" WordCount="{RVNote}" Clicked="{goToReVocaListPage}"/>
+			<vocaBook bookName="복복습 단어장" WordCount="{RRVNote}" Clicked="{goToReReVocaListPage}"/>
+			<vocaBook bookName="완전암기 단어장" WordCount="{PMNote}" Clicked="{goToPerfectVocaListPage}"/>
+		</PageControl>
+	</DockPanel>
+</Page>

@@ -1,0 +1,178 @@
+<Page ux:Class="VocaListPage" ux:Name="root" Reuse="None">
+	<Router ux:Dependency="router"/>
+	<Navigator ux:Dependency="rootNav"/>
+
+	<JavaScript File="VocaListPage.js" />
+
+	<Activated>
+		<Callback Handler="{onResume}"/>
+	</Activated>
+
+	<Deactivated>
+		<Callback Handler="{onPause}"/>
+	</Deactivated>
+
+	<Image Layer="Background" File="../../../Assets/bg_nobar.png" StretchMode="Fill" />
+
+	<WhileTrue Value="{isMemorizePanelVisible}">
+		<!-- 암기 완료 확인 패널 -->
+		<StackPanel Alignment="Center" Width="90%" Height="70%">
+			<StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+				<Image File="../../../Assets/img_memorized_background_title_left.png" Height="36" />
+				<Image File="../../../Assets/img_memorized_background_title_middle.png" Width="100" >
+					<Text Color="White" FontSize="15" Value="오답 단어장 TIP" Alignment="CenterLeft"/>
+				</Image>
+				<Image File="../../../Assets/img_memorized_background_title_right.png" Height="36" />
+			</StackPanel>
+			
+			<Panel Height="100%">
+				<Grid Rows="2*,8*,2*">
+					<Text Color="White" FontSize="15" Value="Genius 매니저" Alignment="CenterLeft" Margin="20,0,10,0" />
+					<Grid Columns="3*,7*">
+						<StackPanel ItemSpacing="10">
+							<Image File="../../../Assets/img_g_comment.png" Height="40" Margin="0,20,0,0" />
+							<Text Value="Genius" Color="White" FontSize="12" Alignment="Center"/>
+						</StackPanel>
+						<ScrollView>
+							<Text Value="{memorizeText}" TextWrapping="Wrap" Color="White" FontSize="12" Margin="0,0,10,0"/>
+						</ScrollView>
+					</Grid>
+					<Grid Columns="3*,3*,3*">
+						<Text Color="White" FontSize="12" Value="정말 외웠죠?" Alignment="CenterLeft" Margin="20,0,0,15"/>
+						<Panel HitTestMode="LocalBounds" Clicked="{memorize}">
+							<Image File="../../../Assets/bt_han_yes.png" Height="30" Margin="0,0,0,25"/>
+						</Panel>
+						<Panel HitTestMode="LocalBounds" Clicked="{closePanel}">
+							<Image File="../../../Assets/bt_han_no.png" Height="30" Margin="0,0,20,25"/>
+						</Panel>
+					</Grid>
+				</Grid>
+				<Image File="../../../Assets/img_memorized_background_main.png" StretchMode="Fill"/>
+			</Panel>
+		</StackPanel>
+	</WhileTrue>
+
+	<DockPanel >
+		<Grid Dock="Top" Columns="3*,3*,3*" Height="50" Background="#1C1C1C">
+			<StackPanel Orientation="Horizontal" ItemSpacing="10" Height="50" >
+					<!-- 뒤로가기 버튼 -->
+					<Panel ux:Name="bt_goBack" Clicked="{goBack}" Height="50" Width="30" HitTestMode="LocalBounds" Alignment="Left" Margin="10,0,0,0">
+							<Image File="../../../Assets/homework_5202_sign_right.png" Height="25"  />
+					</Panel>
+			</StackPanel>
+
+			<!-- 가운데 텍스트 -->
+			<Panel Width="200" Alignment="Center">
+				<Text Value="{titleText}" Color="#00EBED" Alignment="Center" FontSize="20"/>
+			</Panel>
+			<!-- 그리드 맞춰주기 용 -->
+			<Panel />
+		</Grid>
+		<WhileTrue Value="{isEmpty}">
+			<!-- 단어 없는 경우 -->
+			<Panel ux:Name="emptyView">
+				<StackPanel Alignment="Center">
+					<Image File="../../../Assets/img_emt_x_w.png" Width="30%" Height="30%" Alignment="Center"/>
+					<Text Value="{empty_text}" Color="White" Margin="0,20,0,0" Alignment="Center"/>
+					<Text Value="{empty_sub_text}" Margin="0,30,0,0" Alignment="Center" Color="#E2E2E2" FontSize="12"/>
+				</StackPanel>
+			</Panel>
+		</WhileTrue>
+
+		<WhileFalse Value="{isEmpty}">
+			<Panel ux:Name="listScrollView" Dock="Top">
+				<Grid Columns="3*,3*,3*">
+					<WrapPanel Alignment="Center" Clicked="{selectAll}" HitTestMode="LocalBounds">
+						<Pattern_SelectAll_CheckBox Value="{isVoca_SelectAll}" />
+		    			<Text Value="전체선택" TextColor="White" FontSize="13" Margin="10,0,0,0" Alignment="Center"/>
+	    			</WrapPanel>
+	    			<!-- 단어 플레이어 버튼 -->
+	    			<StackPanel Orientation="Horizontal" Alignment="Center" Clicked="{goToVocaPlayerPage}" HitTestMode="LocalBounds">
+		    			<Image File="../../../Assets/common_bt_play.png" Width="15"/>
+		    			<howTo.Text Value="단어플레이어" Margin="5,0,0,0"/>
+	    			</StackPanel>
+
+	    			<WrapPanel Alignment="Center" Visibility="Hidden">
+		    			<Image File="../../../Assets/pnote_3405_delete.png" Width="15"/>
+		    			<howTo.Text Value="삭제" Margin="5,0,0,0"/>
+	    			</WrapPanel>
+				</Grid>
+				<Rectangle Color="White" Opacity="0.2" Height="40"/>
+			</Panel>
+			
+
+			<!-- 단어 리스트 -->
+	  		<ScrollView ux:Name="vocaScrollView">
+				<ScrollViewMotion Overflow="Clamp"/>
+
+				<StackPanel>
+					<Each Items="{listeningList}">
+						<Grid Columns="0.5*,9*" Height="90">
+							<!-- 왼쪽 드래그 시 보이는 한글 뜻 패널 -->
+							<Panel Alignment="Left" Width="220" Color="Black" X="-200" Opacity="0.7">
+								<Image File="../../../Assets/ico_mean_view.png" Width="5" Alignment="Right" Margin="0,0,8,0"/>
+								<Text Value="{INTRPRT}" Alignment="Center" TextColor="White" FontSize="13" TextWrapping="Wrap" Margin="0,0,20,0"/>
+								<SwipeGesture ux:Name="swipe" Direction="Right" Length="200"/>
+								<SwipingAnimation Source="swipe">
+									<Move X="200"/>
+								</SwipingAnimation>
+							</Panel>
+
+							<Grid ux:Name="WordListItem" Columns="2*,6*,2*,3*" Height="90">
+								<WhileTrue Value="{checked}">
+									<Change WordListItem.Color="#4c3980" Duration="0.2" />
+								</WhileTrue>
+								
+								<WhileTrue Value="{isNew}">
+									<Set ico_new.Visibility="Visible" />
+								</WhileTrue>
+								
+								<Panel Alignment="Center">
+									<Image ux:Name="ico_new" File="../../../Assets/common_ico_new.png" Alignment="Top" Margin="0,5,0,0" Width="25" Visibility="Hidden"/>
+									<howTo.Text Value="{cnt}" Alignment="Center" FontSize="12"/>
+								</Panel>
+
+								<!-- 그리드의 6* -->
+								<StackPanel Alignment="Left" Clicked="{toggleItem}" HitTestMode="LocalBounds" Width="100%">
+									<!-- 단어 품사 -->
+									<Rectangle Height="15" Width="40" Alignment="Left" Margin="5,5,0,0">
+										<Stroke Color="Gray" Width="1"/>
+										<Text Value="{PARTS_OF_SPEECH_1}" Color="Gray" FontSize="11" Alignment="Center" />
+									</Rectangle>
+									<!-- 단어 -->
+									<Text Color="White" Value="{WRD}" FontSize="15" Alignment="CenterLeft" Margin="5"/>
+									<!-- 출제빈도 -->
+									<Text Color="White" Value="출제빈도 {STQEST_FQ}" FontSize="11" Alignment="CenterLeft" Margin="5"/>
+								</StackPanel>
+								<!-- 그리드의 2* -->
+								<Panel Clicked="{playWord}" HitTestMode="LocalBounds">
+									<Image File="../../../Assets/pnote_3403_listening.png" Width="40" />
+								</Panel>
+								<!-- 그리드의 3* -->
+								<Panel Clicked="{clickMemorizeButton}" HitTestMode="LocalBounds">
+									<Image File="../../../Assets/wnote_3503_learn_finish.png" Width="60" />
+								</Panel>
+							</Grid>
+						</Grid>
+						<Rectangle StrokeWidth="0.5" StrokeColor="Gray" Opacity="0.5"/>
+					</Each>
+
+					<!-- 더보기 -->
+					<Panel Visibility="{footerBarVisible}">
+						<StackPanel Orientation="Horizontal" Height="40" Alignment="Center" Clicked="{showMoreList}">
+							<Image File="../../../Assets/ico_more_view.png" Height="20" Margin="0,0,10,0"/>
+							<Text Value="{footerText}" Color="White" Alignment="Center"/>
+						</StackPanel>
+
+						<Image File="../../../Assets/bt_top.png" Height="25" Alignment="Right" Margin="0,0,10,0">
+							<Clicked>
+		            <ScrollTo Target="vocaScrollView" Position="0,0" />
+			        </Clicked>
+						</Image>
+						<Rectangle Color="White" Opacity="0.5" />
+					</Panel>
+				</StackPanel>
+			</ScrollView>
+		</WhileFalse>
+	</DockPanel>
+</Page>

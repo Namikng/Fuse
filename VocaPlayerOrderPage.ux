@@ -1,0 +1,104 @@
+<Page ux:Class="VocaPlayerOrderPage" Reuse="None">
+	<!-- Page 속성 Reuse : 이 페이지의 재사용을 막음, 항상 this.Parameter.onValueChnaged가 실행되도록 -->
+	<JavaScript File="VocaPlayerOrderPage.js" />
+	<Router ux:Dependency="router" />
+	<Activated>
+		<Callback Handler="{onResume}"/>
+	</Activated>
+
+	<Deactivated>
+		<Callback Handler="{onPause}"/>
+	</Deactivated>
+	
+	<Image Layer="Background" File="../../../Assets/bg_nobar.png" StretchMode="Fill"/>
+
+	<DockPanel Dock="Top">
+		<!-- 맨 위 툴바 -->
+        <Grid Dock="Top" Columns="3*,3*,3*" Height="50" >
+            <!-- 뒤로가기 버튼 -->
+            <Panel ux:Name="bt_goBack" Clicked="{goBackToVocaPlayer}" Height="50" Width="30" HitTestMode="LocalBounds" Alignment="Left" Margin="10,0,0,0" >
+                <Image File="../../../Assets/actionbar_back_btn.png" Height="20"  />
+            </Panel>
+
+            <!-- 가운데 텍스트 -->
+            <Panel Width="200" Alignment="Center">
+                <Text Value="단어 플레이어" Color="White" FontSize="20" Alignment="Center"/>
+            </Panel>
+
+            <Panel />
+        </Grid>
+        <!-- 단어 리스트 -->
+	    <ScrollView ux:Name="vocaScrollView">
+	    	<WhileTrue Value="{reordering}">
+				<Change vocaScrollView.UserScroll="false" />
+			</WhileTrue>
+
+			<StackPanel>
+				<Each Items="{vocaList}" >
+					<Grid Columns="1*,1*,7*,1*" Height="90" ux:Name="vocaListGrid">
+						<!-- 왼쪽 드래그 시 보이는 단어 한글 뜻 패널 -->
+						<Panel Alignment="Left" Width="220" Color="Black" X="-200" Opacity="0.7">
+							<Image File="../../../Assets/ico_mean_view.png" Width="5" Alignment="Right" Margin="0,0,8,0"/>
+							<Text Value="{INTRPRT}" Alignment="Center" TextColor="White" FontSize="13" TextWrapping="Wrap" Margin="0,0,20,0"/>
+							<SwipeGesture ux:Name="swipe" Direction="Right" Length="200"/>
+							<SwipingAnimation Source="swipe">
+								<Move X="200"/>
+							</SwipingAnimation>
+						</Panel>
+						
+						<Text Value="{cnt}" Color="White" FontSize="12" Alignment="CenterLeft" />
+					
+						<Panel>
+							<!-- 단어 품사 -->
+							<StackPanel Orientation="Horizontal" Alignment="TopLeft" ItemSpacing="10">
+								<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+									<Stroke Color="Gray" Width="1"/>
+									<Text Value="{PARTS_OF_SPEECH_1}" Color="Gray" FontSize="11" Alignment="Center" />
+								</Rectangle>
+
+								<WhileTrue Value="{hasPARTS_OF_SPEECH_2}">
+									<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+										<Stroke Color="Gray" Width="1"/>
+										<Text Value="{PARTS_OF_SPEECH_2}" Color="Gray" FontSize="11" Alignment="Center" />
+									</Rectangle>
+								</WhileTrue>
+
+								<WhileTrue Value="{hasPARTS_OF_SPEECH_3}">
+									<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+										<Stroke Color="Gray" Width="1"/>
+										<Text Value="{PARTS_OF_SPEECH_3}" Color="Gray" FontSize="11" Alignment="Center" />
+									</Rectangle>
+								</WhileTrue>
+							</StackPanel>
+							
+							<!-- 단어 -->
+							<Text Value="{WRD}" Color="White" FontSize="15" Alignment="CenterLeft" TextWrapping="Wrap"/>		
+						</Panel>
+
+						<!-- 순서 변경 드래그 커서 -->
+						<Panel Width="56" HitTestMode="LocalBounds">
+							<Image File="../../../Assets/pnote_3406_cursor.png" Width="10" />
+								<Pressed>
+						            <Callback Handler="{select}" />
+						        </Pressed>
+						        <Released>
+									<Callback Handler="{deselect}" />
+								</Released>
+						</Panel>
+						<LayoutAnimation>
+					        <Move RelativeTo="PositionChange" Vector="1" Duration="0.16" />
+					    </LayoutAnimation>
+					    <WhileHovering>
+					        <Callback Handler="{hover}" />
+					    </WhileHovering>
+					    <WhileTrue Value="{selected}">
+					        <Change vocaListGrid.Opacity="0.6" Duration="0.24" />
+					        <Change vocaListGrid.Color="Black" Duration="0.24" />
+					    </WhileTrue>
+					</Grid>
+					<Rectangle StrokeWidth="1" StrokeColor="Gray" Opacity="0.5"/>
+				</Each>
+			</StackPanel>
+		</ScrollView>
+    </DockPanel>
+</Page>

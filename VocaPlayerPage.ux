@@ -1,0 +1,201 @@
+<Page ux:Class="VocaPlayerPage" Reuse="None">
+	<JavaScript File="VocaPlayerPage.js" />
+	<Router ux:Dependency="router" />
+	<Activated When="Stable">
+		<Callback Handler="{onResume}"/>
+	</Activated>
+
+	<Deactivated>
+		<Callback Handler="{onPause}"/>
+	</Deactivated>
+	
+	<Image Layer="Background" File="../../../Assets/bg_nobar.png" StretchMode="Fill" />
+	<DockPanel Dock="Top">
+		<!-- 맨 위 툴바 -->
+        <Grid Dock="Top" Columns="3*,3*,3*" Height="50" >
+            <!-- 뒤로가기 버튼 -->
+            <Panel ux:Name="bt_goBack" Clicked="{goBack}" Height="50" Width="30" HitTestMode="LocalBounds" Alignment="Left" Margin="10,0,0,0" >
+                <Image File="../../../Assets/homework_5202_sign_right.png" Height="25"  />
+            </Panel>
+
+            <!-- 가운데 텍스트 -->
+            <Panel Width="200" Alignment="Center">
+                <Text Value="단어 플레이어" Color="White" Alignment="Center"/>
+            </Panel>
+
+            <Panel />
+        </Grid>
+		<!-- 단어 조명 부분 -->
+		<Panel Dock="Top">
+			<Image File="../../../Assets/pnote_3405_light.png" Width="60" Alignment="Top"/>
+			<Image File="../../../Assets/pnote_3405_light_bg_.png" Margin="5,20,5,0">
+				<StackPanel Margin="20,10" ItemSpacing="5">
+					<howTo.Text Value="{WRD}" Alignment="CenterLeft" FontSize="18"/>
+					<howTo.Text Value="{INTRPRT}" Alignment="CenterLeft" FontSize="13"/>
+				</StackPanel>
+			</Image>
+		</Panel>
+
+		<!-- 출제빈도 텍스트 -->
+		<Grid Rows="2*,1*" Alignment="TopRight" Height="60" Margin="0,0,15,0" Dock="Top">
+			<howTo.Text Value="{STQEST_FQ}" Alignment="Center" FontSize="20" />
+			<howTo.Text Value="출제빈도"  Alignment="Center" FontSize="12"/>
+		</Grid>
+
+		<!-- 삭제,순서변경 패널 -->
+		<Panel Dock="Top">
+			<StackPanel Orientation="Horizontal" ItemSpacing="10">
+				<!-- 삭제 -->
+				<Panel>
+					<WhileFalse Value="{isDeleteMode}" >
+						<StackPanel Orientation="Horizontal" ItemSpacing="10" Clicked="{clickDeletePanel}" HitTestMode="LocalBounds">
+							<Image File="../../../Assets/pnote_3405_delete.png" Width="20" Margin="15,0,0,0"/>
+							<howTo.Text Value="삭제" Alignment="CenterLeft" FontSize="13"/>
+						</StackPanel>
+					</WhileFalse>
+
+					<WhileTrue Value="{isDeleteMode}" >
+						<StackPanel Orientation="Horizontal" ItemSpacing="10" Clicked="{clickDeletePanel}" HitTestMode="LocalBounds">
+							<Image File="../../../Assets/pnote_3405_complete.png" Width="20" Margin="15,0,0,0"/>
+							<howTo.Text Value="완료" Alignment="CenterLeft" FontSize="13"/>
+						</StackPanel>
+					</WhileTrue>
+				</Panel>
+				<!-- 순서 변경 -->
+				<StackPanel Orientation="Horizontal" Clicked="{goToVocaPlayerOrderPage}" HitTestMode="LocalBounds">
+			    	<Image File="../../../Assets/pnote_3405_move.png" Width="10" Margin="30,0,10,0"/>
+			    	<howTo.Text Value="순서변경" Alignment="CenterLeft" FontSize="13" />	
+		    	</StackPanel>
+	    	</StackPanel>
+	    	<Rectangle Color="White" Opacity="0.2" Height="40"/>
+    	</Panel>
+	
+    <!-- 패턴 예문 리스트 -->
+    <ScrollView ux:Name="vocaScrollView">
+		<StackPanel>
+			<Each Items="{vocaList}" >
+				<Grid Columns="1*,1*,6*,2*" Height="90">
+					<!-- 왼쪽 드래그 시 보이는 단어 한글 뜻 패널 -->
+					<Panel Alignment="Left" Width="220" Color="Black" X="-200" Opacity="0.7">
+						<Image File="../../../Assets/ico_mean_view.png" Width="5" Alignment="Right" Margin="0,0,8,0"/>
+						<Text Value="{INTRPRT}" Alignment="Center" TextColor="White" FontSize="13" TextWrapping="Wrap" Margin="0,0,20,0"/>
+						<SwipeGesture ux:Name="swipe" Direction="Right" Length="200"/>
+						<SwipingAnimation Source="swipe">
+							<Move X="200"/>
+						</SwipingAnimation>
+					</Panel>
+					<!-- 단어가 재생중일때 -->
+					<WhileTrue Value="{isPlaying}">
+						<Image File="../../../Assets/pnote_3405_listening.png" Height="18" Alignment="CenterLeft"/>
+					</WhileTrue>
+					<!-- 단어가 재생 중이 아닐때 -->
+					<WhileFalse Value="{isPlaying}">
+						<Text Value="{cnt}" Color="White" FontSize="12" Alignment="CenterLeft" />
+					</WhileFalse>
+						<Panel>
+							<!-- 단어 품사 -->
+							<StackPanel Orientation="Horizontal" Alignment="TopLeft" ItemSpacing="10">
+								<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+									<Stroke Color="Gray" Width="1"/>
+									<Text Value="{PARTS_OF_SPEECH_1}" Color="Gray" FontSize="11" Alignment="Center" />
+								</Rectangle>
+
+								<WhileTrue Value="{hasPARTS_OF_SPEECH_2}">
+									<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+										<Stroke Color="Gray" Width="1"/>
+										<Text Value="{PARTS_OF_SPEECH_2}" Color="Gray" FontSize="11" Alignment="Center" />
+									</Rectangle>
+								</WhileTrue>
+
+								<WhileTrue Value="{hasPARTS_OF_SPEECH_3}">
+									<Rectangle Height="15" Width="30" Alignment="Left" Margin="5,10,0,0">
+										<Stroke Color="Gray" Width="1"/>
+										<Text Value="{PARTS_OF_SPEECH_3}" Color="Gray" FontSize="11" Alignment="Center" />
+									</Rectangle>
+								</WhileTrue>
+							</StackPanel>
+							<!-- 단어가 재생중일때 -->
+							<WhileTrue Value="{isPlaying}">
+								<Text Value="{WRD}" Color="#00FCFF" Alignment="CenterLeft" TextWrapping="Wrap"/>
+							</WhileTrue>
+							<!-- 단어가 재생 중이 아닐때 -->
+							<WhileFalse Value="{isPlaying}">
+								<Panel Clicked="{playThis}" HitTestMode="LocalBounds">
+									<Text Value="{WRD}" Color="White" FontSize="15" Alignment="CenterLeft" TextWrapping="Wrap"/>
+								</Panel>
+							</WhileFalse>
+						</Panel>
+						<!-- 삭제 버튼 -->
+						<!-- 버튼 보이지 않을때도 Grid 맞춰주기 위해 Panel로 감쌈 -->
+						<Panel>
+							<WhileTrue Value="{isDeleteMode}">
+								<Panel ux:Name="deleteVocaBtn" Clicked="{deleteVoca}" Height="90" Width="90" HitTestMode="LocalBounds">
+									<Image File="../../../Assets/pnote_3405_row_delete.png" Width="20" Alignment="Center"/>
+								</Panel>
+							</WhileTrue>
+						</Panel>
+					</Grid>
+				<Rectangle StrokeWidth="1" StrokeColor="Gray" Opacity="0.5"/>
+			</Each>
+		</StackPanel>
+	</ScrollView>
+
+		<StackPanel Orientation="Vertical" Dock="Bottom" Height="100">
+			<Grid Columns="2*,6*,2*" Color="#09112A" Height="50">
+				<!-- 지난 시간 -->
+				<howTo.Text Value="{currentTime}" FontSize="12" Alignment="Center" />
+				<!-- 재생 바 -->
+				<NativeViewHost>
+					<Slider Value="{PROGRESS}" Minimum="{MIN_PROGRESS}" Maximum="{MAX_PROGRESS}" ValueChanged="{sliderValueChanged}"/>
+				</NativeViewHost>
+				<!-- 남은 시간 -->
+				<howTo.Text Value="{duration}" FontSize="12" Alignment="Center" />
+			</Grid>
+			
+			<Grid ColumnCount="5" Color="#09112A" Height="50">
+				<!-- 재생 속도 조절 버튼 -->
+				<Image ux:Name="img_playspeed_1_0" Source="{DataToResource image}" Width="30" Clicked="{setPlaySpeed}" HitTestMode="LocalBounds" />
+
+				<!-- 앞으로 감기 버튼 -->
+				<Panel ux:Name="bt_prev" Clicked="{Decrease_SORT_ORDR}" Height="50" Width="30" HitTestMode="LocalBounds" >
+					<WhileFalse Value="{isCurrent_SORT_ORDR_First}">
+						<Image File="../../../Assets/common_bt_prev.png" Width="30" />
+					</WhileFalse>
+				</Panel>
+
+				<!-- 재생 버튼 -->
+				<Panel ux:Name="playControlPanel" IsEnabled="true">
+					<WhileTrue Value="{isPlay}">
+						<Panel Width="30" Height="50" HitTestMode="LocalBounds">
+							<Image Source="pauseBtn" Width="30"/>
+							<Clicked Handler="{pause}"/>
+						</Panel>
+					</WhileTrue>
+
+					<WhileFalse Value="{isPlay}">
+						<Panel Width="30" Height="50" HitTestMode="LocalBounds">
+							<Image Source="playBtn" Width="30"/>
+							<Clicked Handler="{start}"/>
+						</Panel>
+					</WhileFalse>
+
+					<WhileTrue Value="{isPlayAllCompletion}">
+						<Change playControlPanel.IsEnabled="false"/>
+					</WhileTrue>
+				</Panel>
+
+				<!-- 뒤로 감기 버튼 -->
+				<Panel ux:Name="bt_next" Clicked="{Increase_SORT_ORDR}" Height="50" Width="50">
+					<WhileFalse Value="{isCurrent_SORT_ORDR_Last}">
+						<Image File="../../../Assets/common_bt_next.png" Width="30" />
+					</WhileFalse>
+				</Panel>
+
+				<!-- 재생 설정 버튼(한문제씩, 연속 재생, 반복 재생) -->
+				<Panel HitTestMode="LocalBounds">
+					<Image File="../../../Assets/bt_xnote_continueous.png" Width="50" />
+				</Panel>
+			</Grid>
+		</StackPanel>
+	</DockPanel>
+</Page>
